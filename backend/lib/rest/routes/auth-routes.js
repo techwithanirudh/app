@@ -1,0 +1,94 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
+const express_1 = require("express");
+const user_1 = require("../../data/models/user");
+const passport_1 = __importDefault(require("passport"));
+const api_error_1 = require("../modules/api-error");
+const types_1 = require("@acrd/types");
+const rate_limiter_1 = require("../modules/rate-limiter");
+exports.router = (0, express_1.Router)();
+exports.router.post('/login', (0, rate_limiter_1.extraRateLimit)(20), (req, res, next) => {
+    req['flash'] = (_, message) => res.status(400).json({ message });
+    next();
+}, passport_1.default.authenticate('local', {
+    failWithError: true,
+    failureFlash: 'Invalid email or password',
+}), async (req, res) => {
+    const user = await deps.users.getByEmail(req.body.email);
+    if (!user)
+        throw new api_error_1.APIError(400, 'Invalid credentials');
+    else if (user.locked)
+        throw new api_error_1.APIError(403, 'This account is locked');
+    else if (user.verified) {
+        await deps.emailFunctions.verifyCode(user);
+        return res.status(200).json({
+            message: 'Check your email for a verification code',
+        });
+    }
+    res.status(201).json({ token: await deps.users.createToken(user) });
+});
+exports.router.post('/register', (0, rate_limiter_1.extraRateLimit)(10), async (req, res) => {
+    const user = await deps.users.create({
+        email: req.body.email,
+        password: req.body.password,
+        username: req.body.username,
+    });
+    await deps.emailFunctions.verifyEmail(user.email, user);
+    res.status(201).json(await deps.users.createToken(user));
+});
+exports.router.get('/verify', (0, rate_limiter_1.extraRateLimit)(20), async (req, res) => {
+    const email = deps.verification.getEmailFromCode(req.query.code);
+    const user = await user_1.User.findOne({ email });
+    if (!email || !user)
+        throw new api_error_1.APIError(400, 'Invalid code');
+    const code = deps.verification.get(email);
+    if (!code)
+        throw new api_error_1.APIError(400, 'Invalid code');
+    deps.verification.delete(email);
+    if (code.type === 'FORGOT_PASSWORD') {
+        await user.setPassword(code.value);
+        await user.save();
+        res.json({ message: 'Password reset' });
+    }
+    else if (code.type === 'VERIFY_EMAIL') {
+        user.verified = true;
+        await user.save();
+        res.json({ message: 'Email verified' });
+    }
+    else if (code.type === 'LOGIN')
+        res.json({ token: await deps.users.createToken(user) });
+});
+exports.router.get('/email/forgot-password', (0, rate_limiter_1.extraRateLimit)(10), async (req, res) => {
+    const email = req.query.email?.toString();
+    if (!email)
+        throw new api_error_1.APIError(400, 'Email not provided');
+    const isValid = types_1.patterns.email.test(email);
+    if (!isValid)
+        throw new api_error_1.APIError(400, 'Email is not in a valid format');
+    try {
+        const user = await deps.users.getByEmail(email);
+        await deps.emailFunctions.forgotPassword(email, user);
+    }
+    finally {
+        return res.status(200).json({ message: 'Email sent' });
+    }
+});
+exports.router.post('/change-password', (0, rate_limiter_1.extraRateLimit)(10), async (req, res) => {
+    const { email, oldPassword, newPassword } = req.body;
+    const user = await user_1.User.findOne({ email });
+    if (!user)
+        throw new api_error_1.APIError(400, 'User not found');
+    if (!user.verified)
+        throw new api_error_1.APIError(400, 'Please verify your account');
+    await user.changePassword(oldPassword, newPassword);
+    await user.save();
+    return res.status(200).json({
+        message: 'Password changed',
+        token: await deps.users.createToken(user),
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXV0aC1yb3V0ZXMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvcmVzdC9yb3V0ZXMvYXV0aC1yb3V0ZXMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQUEscUNBQWlDO0FBQ2pDLGlEQUFnRTtBQUNoRSx3REFBZ0M7QUFDaEMsb0RBQWdEO0FBQ2hELHVDQUF1QztBQUN2QywwREFBeUQ7QUFHNUMsUUFBQSxNQUFNLEdBQUcsSUFBQSxnQkFBTSxHQUFFLENBQUM7QUFFL0IsY0FBTSxDQUFDLElBQUksQ0FBQyxRQUFRLEVBQUUsSUFBQSw2QkFBYyxFQUFDLEVBQUUsQ0FBQyxFQUFFLENBQUMsR0FBRyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsRUFBRTtJQUMzRCxHQUFHLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxDQUFTLEVBQUUsT0FBZSxFQUFFLEVBQUUsQ0FBQyxHQUFHLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyxFQUFFLE9BQU8sRUFBRSxDQUFDLENBQUM7SUFDakYsSUFBSSxFQUFFLENBQUM7QUFDVCxDQUFDLEVBQUUsa0JBQVEsQ0FBQyxZQUFZLENBQUMsT0FBTyxFQUFFO0lBQ2hDLGFBQWEsRUFBRSxJQUFJO0lBQ25CLFlBQVksRUFBRSwyQkFBMkI7Q0FDMUMsQ0FBQyxFQUNBLEtBQUssRUFBRSxHQUFHLEVBQUUsR0FBRyxFQUFFLEVBQUU7SUFDakIsTUFBTSxJQUFJLEdBQUcsTUFBTSxJQUFJLENBQUMsS0FBSyxDQUFDLFVBQVUsQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQ3pELElBQUksQ0FBQyxJQUFJO1FBQ1AsTUFBTSxJQUFJLG9CQUFRLENBQUMsR0FBRyxFQUFFLHFCQUFxQixDQUFDLENBQUM7U0FDNUMsSUFBSSxJQUFJLENBQUMsTUFBTTtRQUNsQixNQUFNLElBQUksb0JBQVEsQ0FBQyxHQUFHLEVBQUUsd0JBQXdCLENBQUMsQ0FBQztTQUMvQyxJQUFJLElBQUksQ0FBQyxRQUFRLEVBQUU7UUFDdEIsTUFBTSxJQUFJLENBQUMsY0FBYyxDQUFDLFVBQVUsQ0FBQyxJQUFXLENBQUMsQ0FBQztRQUNsRCxPQUFPLEdBQUcsQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDO1lBQzFCLE9BQU8sRUFBRSwwQ0FBMEM7U0FDcEQsQ0FBQyxDQUFDO0tBQ0o7SUFDRCxHQUFHLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyxFQUFFLEtBQUssRUFBRSxNQUFNLElBQUksQ0FBQyxLQUFLLENBQUMsV0FBVyxDQUFDLElBQUksQ0FBQyxFQUFFLENBQUMsQ0FBQztBQUN0RSxDQUFDLENBQUMsQ0FBQztBQUVMLGNBQU0sQ0FBQyxJQUFJLENBQUMsV0FBVyxFQUFFLElBQUEsNkJBQWMsRUFBQyxFQUFFLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLEdBQUcsRUFBRSxFQUFFO0lBQzlELE1BQU0sSUFBSSxHQUFHLE1BQU0sSUFBSSxDQUFDLEtBQUssQ0FBQyxNQUFNLENBQUM7UUFDbkMsS0FBSyxFQUFFLEdBQUcsQ0FBQyxJQUFJLENBQUMsS0FBSztRQUNyQixRQUFRLEVBQUUsR0FBRyxDQUFDLElBQUksQ0FBQyxRQUFRO1FBQzNCLFFBQVEsRUFBRSxHQUFHLENBQUMsSUFBSSxDQUFDLFFBQVE7S0FDNUIsQ0FBNEIsQ0FBQztJQUU5QixNQUFNLElBQUksQ0FBQyxjQUFjLENBQUMsV0FBVyxDQUFDLElBQUksQ0FBQyxLQUFLLEVBQUUsSUFBSSxDQUFDLENBQUM7SUFFeEQsR0FBRyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyxJQUFJLENBQUMsTUFBTSxJQUFJLENBQUMsS0FBSyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDO0FBQzNELENBQUMsQ0FBQyxDQUFDO0FBRUgsY0FBTSxDQUFDLEdBQUcsQ0FBQyxTQUFTLEVBQUUsSUFBQSw2QkFBYyxFQUFDLEVBQUUsQ0FBQyxFQUFFLEtBQUssRUFBRSxHQUFHLEVBQUUsR0FBRyxFQUFFLEVBQUU7SUFDM0QsTUFBTSxLQUFLLEdBQUcsSUFBSSxDQUFDLFlBQVksQ0FBQyxnQkFBZ0IsQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLElBQWMsQ0FBQyxDQUFDO0lBQzNFLE1BQU0sSUFBSSxHQUFHLE1BQU0sV0FBSSxDQUFDLE9BQU8sQ0FBQyxFQUFFLEtBQUssRUFBRSxDQUFRLENBQUM7SUFDbEQsSUFBSSxDQUFDLEtBQUssSUFBSSxDQUFDLElBQUk7UUFDakIsTUFBTSxJQUFJLG9CQUFRLENBQUMsR0FBRyxFQUFFLGNBQWMsQ0FBQyxDQUFDO0lBRTFDLE1BQU0sSUFBSSxHQUFHLElBQUksQ0FBQyxZQUFZLENBQUMsR0FBRyxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQzFDLElBQUksQ0FBQyxJQUFJO1FBQ1AsTUFBTSxJQUFJLG9CQUFRLENBQUMsR0FBRyxFQUFFLGNBQWMsQ0FBQyxDQUFDO0lBRTFDLElBQUksQ0FBQyxZQUFZLENBQUMsTUFBTSxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBRWhDLElBQUksSUFBSSxDQUFDLElBQUksS0FBSyxpQkFBaUIsRUFBRTtRQUNuQyxNQUFNLElBQUksQ0FBQyxXQUFXLENBQUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFDO1FBQ25DLE1BQU0sSUFBSSxDQUFDLElBQUksRUFBRSxDQUFDO1FBQ2xCLEdBQUcsQ0FBQyxJQUFJLENBQUMsRUFBRSxPQUFPLEVBQUUsZ0JBQWdCLEVBQUUsQ0FBQyxDQUFDO0tBQ3pDO1NBQU0sSUFBSSxJQUFJLENBQUMsSUFBSSxLQUFLLGNBQWMsRUFBRTtRQUN2QyxJQUFJLENBQUMsUUFBUSxHQUFHLElBQUksQ0FBQztRQUNyQixNQUFNLElBQUksQ0FBQyxJQUFJLEVBQUUsQ0FBQztRQUNsQixHQUFHLENBQUMsSUFBSSxDQUFDLEVBQUUsT0FBTyxFQUFFLGdCQUFnQixFQUFFLENBQUMsQ0FBQztLQUN6QztTQUFNLElBQUksSUFBSSxDQUFDLElBQUksS0FBSyxPQUFPO1FBQzlCLEdBQUcsQ0FBQyxJQUFJLENBQUMsRUFBRSxLQUFLLEVBQUUsTUFBTSxJQUFJLENBQUMsS0FBSyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFDLENBQUM7QUFDNUQsQ0FBQyxDQUFDLENBQUM7QUFFSCxjQUFNLENBQUMsR0FBRyxDQUFDLHdCQUF3QixFQUFFLElBQUEsNkJBQWMsRUFBQyxFQUFFLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLEdBQUcsRUFBRSxFQUFFO0lBQzFFLE1BQU0sS0FBSyxHQUFHLEdBQUcsQ0FBQyxLQUFLLENBQUMsS0FBSyxFQUFFLFFBQVEsRUFBRSxDQUFDO0lBQzFDLElBQUksQ0FBQyxLQUFLO1FBQ1IsTUFBTSxJQUFJLG9CQUFRLENBQUMsR0FBRyxFQUFFLG9CQUFvQixDQUFDLENBQUM7SUFDaEQsTUFBTSxPQUFPLEdBQUcsZ0JBQVEsQ0FBQyxLQUFLLENBQUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBQzNDLElBQUksQ0FBQyxPQUFPO1FBQ1YsTUFBTSxJQUFJLG9CQUFRLENBQUMsR0FBRyxFQUFFLGdDQUFnQyxDQUFDLENBQUM7SUFFNUQsSUFBSTtRQUNGLE1BQU0sSUFBSSxHQUFHLE1BQU0sSUFBSSxDQUFDLEtBQUssQ0FBQyxVQUFVLENBQUMsS0FBSyxDQUFDLENBQUM7UUFDaEQsTUFBTSxJQUFJLENBQUMsY0FBYyxDQUFDLGNBQWMsQ0FBQyxLQUFLLEVBQUUsSUFBSSxDQUFDLENBQUM7S0FDdkQ7WUFBUztRQUNSLE9BQU8sR0FBRyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyxJQUFJLENBQUMsRUFBRSxPQUFPLEVBQUUsWUFBWSxFQUFFLENBQUMsQ0FBQztLQUN4RDtBQUNILENBQUMsQ0FBQyxDQUFDO0FBRUgsY0FBTSxDQUFDLElBQUksQ0FBQyxrQkFBa0IsRUFBRSxJQUFBLDZCQUFjLEVBQUMsRUFBRSxDQUFDLEVBQUUsS0FBSyxFQUFFLEdBQUcsRUFBRSxHQUFHLEVBQUUsRUFBRTtJQUNyRSxNQUFNLEVBQUUsS0FBSyxFQUFFLFdBQVcsRUFBRSxXQUFXLEVBQUUsR0FBMEMsR0FBRyxDQUFDLElBQUksQ0FBQztJQUU1RixNQUFNLElBQUksR0FBRyxNQUFNLFdBQUksQ0FBQyxPQUFPLENBQUMsRUFBRSxLQUFLLEVBQUUsQ0FBNEIsQ0FBQztJQUN0RSxJQUFJLENBQUMsSUFBSTtRQUNQLE1BQU0sSUFBSSxvQkFBUSxDQUFDLEdBQUcsRUFBRSxnQkFBZ0IsQ0FBQyxDQUFDO0lBQzVDLElBQUksQ0FBQyxJQUFJLENBQUMsUUFBUTtRQUNoQixNQUFNLElBQUksb0JBQVEsQ0FBQyxHQUFHLEVBQUUsNEJBQTRCLENBQUMsQ0FBQztJQUV4RCxNQUFNLElBQUksQ0FBQyxjQUFjLENBQUMsV0FBVyxFQUFFLFdBQVcsQ0FBQyxDQUFDO0lBQ3BELE1BQU0sSUFBSSxDQUFDLElBQUksRUFBRSxDQUFDO0lBRWxCLE9BQU8sR0FBRyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyxJQUFJLENBQUM7UUFDMUIsT0FBTyxFQUFFLGtCQUFrQjtRQUMzQixLQUFLLEVBQUUsTUFBTSxJQUFJLENBQUMsS0FBSyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUM7S0FDQyxDQUFDLENBQUM7QUFDaEQsQ0FBQyxDQUFDLENBQUMifQ==
