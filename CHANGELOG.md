@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ![](https://i.ibb.co/BL4kYcK/image.png)
 
-- Invite Page: Join a server through `acrd.app/join/<code>`.
+- Invite Page: Join a server through `anichat.app/join/<code>`.
 
 ![](https://i.ibb.co/TKPvY68/image.png)
 

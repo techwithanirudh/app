@@ -1,8 +1,8 @@
-import { Channel } from '@accord/backend/data/models/channel';
-import { Guild } from '@accord/backend/data/models/guild';
-import { GuildMember } from '@accord/backend/data/models/guild-member';
-import { Role } from '@accord/backend/data/models/role';
-import { User } from '@accord/backend/data/models/user';
+import { Channel } from '@anichat/backend/data/models/channel';
+import { Guild } from '@anichat/backend/data/models/guild';
+import { GuildMember } from '@anichat/backend/data/models/guild-member';
+import { Role } from '@anichat/backend/data/models/role';
+import { User } from '@anichat/backend/data/models/user';
 
 export default () => Promise.all([
   Channel.deleteMany(),

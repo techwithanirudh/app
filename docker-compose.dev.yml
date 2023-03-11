@@ -1,12 +1,12 @@
 version: '3.8'
 services:  
   database:
-    container_name: accord_database
+    container_name: anichat_database
     image: mongo:5-focal
     ports: [27018:27017]
-    volumes: [accord:/data/db]
+    volumes: [anichat:/data/db]
   app:
-    container_name: accord_app
+    container_name: anichat_app
     depends_on: [database]
     build:
       context: ./
@@ -19,4 +19,4 @@ services:
       - ./backend/logs:/app/backend/logs
       - ./frontend/src:/app/frontend/src
 volumes:
-  accord:
+  anichat:

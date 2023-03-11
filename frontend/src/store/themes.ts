@@ -4,7 +4,7 @@ import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { actions as api } from './api';
 import { notInArray } from './utils/filter';
 import { getHeaders } from './utils/rest-headers';
-import accordTheme from '!!raw-loader!../styles/theme/accord-theme.css';
+import anichatTheme from '!!raw-loader!../styles/theme/anichat-theme.css';
 import discordTheme from '!!raw-loader!../styles/theme/discord-theme.css';
 import winterTheme from '!!raw-loader!../styles/theme/winter-theme.css';
 import themeTemplate from '!!raw-loader!../styles/theme/winter-theme.css';
@@ -19,7 +19,7 @@ const slice = createSlice({
     iconURL: '/images/themes/horizon.svg',
     isFeatured: true,
     name: 'Horizon (default)',
-    styles: accordTheme,
+    styles: anichatTheme,
   }, {
     id: 'discord',
     code: 'discord',
@@ -108,7 +108,7 @@ export const deleteTheme = (id: string) => (dispatch) => {
   }));
 }
 
-export const applyTheme = (styles: any = accordTheme) => {
+export const applyTheme = (styles: any = anichatTheme) => {
   const themeWrapper = document.querySelector('#themeWrapper')!;
   themeWrapper.innerHTML = `<style>${styles}</style>`;
 }

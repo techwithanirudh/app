@@ -3,14 +3,14 @@ import { patterns } from '@acrd/types';
 
 let inc = 0;
 let lastSnowflake: string;
-const accordEpoch = 1577836800000;
+const anichatEpoch = 1577836800000;
 
 export function generateSnowflake() {
   const pad = (num: number, by: number) => num
     .toString(2)
     .padStart(by, '0');
 
-  const msSince = pad(new Date().getTime() - accordEpoch, 42);
+  const msSince = pad(new Date().getTime() - anichatEpoch, 42);
   const pid = pad(process.pid, 5).slice(0, 5);
   const wid = pad(cluster.worker?.id ?? 0, 5);
   const getInc = (add: number) => pad(inc + add, 12);
@@ -43,5 +43,5 @@ export function snowflakeToDate(snowflake: string) {
   const sinceEpochMs = Number(
     binary64(snowflake).slice(0, 42 + 2)
   );
-  return new Date(sinceEpochMs + accordEpoch);
+  return new Date(sinceEpochMs + anichatEpoch);
 }

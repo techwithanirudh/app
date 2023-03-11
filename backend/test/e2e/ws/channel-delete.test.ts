@@ -1,7 +1,7 @@
 import '@acrd/types';
 import { given, test } from '@acrd/ion';
-import { SelfUserDocument } from '@accord/backend/data/models/user';
-import { generateSnowflake } from '@accord/backend/data/snowflake-entity';
+import { SelfUserDocument } from '@anichat/backend/data/models/user';
+import { generateSnowflake } from '@anichat/backend/data/snowflake-entity';
 import clearDB from '../util/clear-db';
 import emitReady from '../util/emit-ready';
 import emitAsync from '../util/emit-async';

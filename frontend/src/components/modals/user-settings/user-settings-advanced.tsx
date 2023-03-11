@@ -13,9 +13,9 @@ const UserSettingsAdvanced: React.FunctionComponent = () => {
   const requestDelete = () => {
     const confirmation = window.prompt(
       `WARNING: You are about to delete account '${selfUser.username}'\n` +
-      `Type \'accord\' to confirm deletion.`
+      `Type \'anichat\' to confirm deletion.`
     );
-    if (confirmation == 'accord')
+    if (confirmation == 'anichat')
       dispatch(deleteSelf());
   };
 

@@ -12,7 +12,7 @@ test(createTheme, () => {
   given({ name: '' }).expect('Name is required');
   given({ name: longString(33) }).expect('Name is too long');
   given({ name: 'Cool Theme' }).expect(true);
-  given({ code: 'accord' }).expect('This code is reserved');
+  given({ code: 'anichat' }).expect('This code is reserved');
   given({ code: 'default' }).expect('This code is reserved');
   given({ code: 'discord' }).expect('This code is reserved');
   given({ code: generateInvite() }).expect(true);

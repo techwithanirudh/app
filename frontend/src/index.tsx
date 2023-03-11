@@ -8,9 +8,9 @@ import { Provider } from 'react-redux';
 import configureStore from './store/configure-store';
 import { SnackbarProvider } from 'notistack';
 import { applyTheme } from './store/themes';
-import accordTheme from '!!raw-loader!./styles/theme/accord-theme.css';
+import anichatTheme from '!!raw-loader!./styles/theme/anichat-theme.css';
 
-applyTheme(accordTheme);
+applyTheme(anichatTheme);
 
 ReactDOM.render(
   <SnackbarProvider maxSnack={1}>

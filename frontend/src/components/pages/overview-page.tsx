@@ -15,7 +15,7 @@ const OverviewPage: React.FunctionComponent = () => {
   return (
     <PageWrapper
       className="bg-bg-primary h-full w-full"
-      pageTitle="acrd.app">
+      pageTitle="anichat.app">
       <Sidebar />
       <AppNavbar />
       <div className="bg-bg-primary h-full w-full flex flex-col flex-grow"></div>

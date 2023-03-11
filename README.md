@@ -1,8 +1,8 @@
-# Accord - Messaging Made Simple.
+# Anichat - Messaging Made Simple.
 
 > Built with React, Redux, and Node.js.
 
-Accord is an app, similar to Discord, but cooler.
+Anichat is an app, similar to Discord, but cooler.
 
 **Please star this repo to support development.**
 
@@ -68,7 +68,7 @@ Accord is an app, similar to Discord, but cooler.
 ```
 EMAIL_ADDRESS="...@gmail.com"
 EMAIL_PASSWORD="..."
-MONGO_URI="mongodb://database/accord"
+MONGO_URI="mongodb://database/anichat"
 NODE_ENV="dev"
 PORT=3000
 WEBSITE_URL="http://localhost:4200"
@@ -81,7 +81,7 @@ WEBSITE_URL="http://localhost:4200"
 API_URL="http://localhost:3001/api"
 EMAIL_ADDRESS="...@gmail.com"
 EMAIL_PASSWORD="..."
-MONGO_URI="mongodb://localhost/accord-test"
+MONGO_URI="mongodb://localhost/anichat-test"
 NODE_ENV="dev"
 PORT=3001
 ROOT_ENDPOINT="http://localhost:3001"

@@ -1,9 +1,9 @@
 import '@acrd/types';
 import { expect } from 'chai';
 import { given, test } from '@acrd/ion';
-import { SelfUserDocument } from '@accord/backend/data/models/user';
-import { generateSnowflake } from '@accord/backend/data/snowflake-entity';
-import { Channel } from '@accord/backend/data/models/channel';
+import { SelfUserDocument } from '@anichat/backend/data/models/user';
+import { generateSnowflake } from '@anichat/backend/data/snowflake-entity';
+import { Channel } from '@anichat/backend/data/models/channel';
 import clearDB from '../util/clear-db';
 import emitReady from '../util/emit-ready';
 import emitAsync from '../util/emit-async';

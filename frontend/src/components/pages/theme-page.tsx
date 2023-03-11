@@ -29,7 +29,7 @@ const ThemePage: React.FunctionComponent<ThemePageProps> = () => {
   }, []);
 
   const Wrapper: React.FunctionComponent = ({ children }) => (
-    <PageWrapper pageTitle={`acrd.app | ${theme?.name} Theme`}>
+    <PageWrapper pageTitle={`anichat.app | ${theme?.name} Theme`}>
       <div className="flex items-center absolute justify-center h-screen left-[35%]">
         <section className="rounded-md shadow bg-bg-primary p-8 w-[478px]">
           {children}

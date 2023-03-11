@@ -24,7 +24,7 @@ const PageWrapper: React.FunctionComponent<PageWrapperProps> = (props) => {
   const [hasAnnoyedUser, setHasAnnoyedUser] = useState(false);
 
   useEffect(() => {
-    document.title = props.pageTitle ?? 'acrd.app';
+    document.title = props.pageTitle ?? 'anichat.app';
   }, []);
 
   const onClick = () => dropdown && dispatch(ui.toggleDropdown({}));

@@ -47,7 +47,7 @@ const HomePage: React.FunctionComponent = () => {
   return (
     <PageWrapper
       className="z-10 bg-bg-tertiary h-full relative"
-      pageTitle="acrd.app | Messaging Made Simple">
+      pageTitle="anichat.app | Messaging Made Simple">
       <Navbar />
       <section className="z-10 text-center my-4">
         <h1>It's time to ditch Discord and Zoom.</h1>
@@ -60,7 +60,7 @@ const HomePage: React.FunctionComponent = () => {
                 Join <NumberFormat
                   value={userCount}
                   displayType={'text'}
-                  thousandSeparator={true} /> Accord users that simplified their life.
+                  thousandSeparator={true} /> Anichat users that simplified their life.
               </span>
             )}
           </div>
@@ -72,7 +72,7 @@ const HomePage: React.FunctionComponent = () => {
         </button>
         <button className="shadow-md bg-green text-dark ml-10">
           <Link to="/channels/@me">
-            <NormalButton className="text-black bg-success rounded W-56 h-11 px-6 mt-8">Open Accord in Your Browser</NormalButton>
+            <NormalButton className="text-black bg-success rounded W-56 h-11 px-6 mt-8">Open Anichat in Your Browser</NormalButton>
           </Link>
         </button>
       </section>
@@ -80,18 +80,8 @@ const HomePage: React.FunctionComponent = () => {
       <section
         title="*Description may represent unreleased features.*"
         className="absolute top-50 w-1/2 inset-x-1/4 flex justify-between">
-        <ImageCard src={Chat} title="Chat Made Simple">
-          Accord focuses on just the practical features for a simple messaging solution.
-        </ImageCard>
-        <ImageCard src={Devices} title="Mobile or Desktop">
-          (work in progress)
-        </ImageCard>
-        <ImageCard src={Friends} title="Join and Manage Guilds">
-          Create and customize your own messaging spaces for your friends.
-        </ImageCard>
         <ImageCard src={Secure} title="Secure Messages">
-          Accord is <a href={process.env.REACT_APP_REPO_URL} target="_blank">open-source on GitHub</a>.
-          (work in progress)
+          Anichat is based on <a href={process.env.REACT_APP_REPO_URL} target="_blank">open-source software</a>.
         </ImageCard>
       </section>
 

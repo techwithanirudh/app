@@ -1,9 +1,9 @@
 import '../../../types/global';
 import 'mocha';
 import clearDB from '../util/clear-db';
-import { ThemeDocument } from '@accord/backend/data/models/theme';
+import { ThemeDocument } from '@anichat/backend/data/models/theme';
 import request from 'supertest';
-import { app } from '@accord/backend/rest/server';
+import { app } from '@anichat/backend/rest/server';
 
 describe('theme-routes', () => {
   let theme: ThemeDocument;

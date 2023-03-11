@@ -1,10 +1,10 @@
 import { given, test } from '@acrd/ion';
-import { SelfUserDocument } from '@accord/backend/data/models/user';
+import { SelfUserDocument } from '@anichat/backend/data/models/user';
 import clearDB from '../util/clear-db';
 import emitReady from '../util/emit-ready';
 import emitAsync from '../util/emit-async';
-import { generateSnowflake } from '@accord/backend/data/snowflake-entity';
-import { GuildDocument } from '@accord/backend/data/models/guild';
+import { generateSnowflake } from '@anichat/backend/data/snowflake-entity';
+import { GuildDocument } from '@anichat/backend/data/models/guild';
 import setRandomUser from '../util/set-random-user';
 import setNoobMember from '../util/set-noob-member';
 

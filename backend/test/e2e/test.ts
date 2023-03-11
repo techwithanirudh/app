@@ -14,14 +14,14 @@ use(chaiSpies);
 use(chaiThings);
 use(should);
 
-import('@accord/backend/modules/deps');
-import('@accord/backend/modules/logger');
+import('@anichat/backend/modules/deps');
+import('@anichat/backend/modules/logger');
 
 global['socket'] = setupSocket();
 
 (async() => {
   const mongod = await MongoMemoryServer.create();
-  process.env.MONGO_URI = mongod.getUri('accord-test');
+  process.env.MONGO_URI = mongod.getUri('anichat-test');
   
   await mongoose.connect(process.env.MONGO_URI, { 
     useUnifiedTopology: true, 

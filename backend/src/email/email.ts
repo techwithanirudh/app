@@ -49,7 +49,7 @@ export interface EmailTemplate {
 }
 
 const subjects: { [k in keyof EmailTemplate]: string } = {
-  'forgot-password': 'Accord - Forgot Password',
-  'verify': 'Accord - Login Verification Code',
-  'verify-email': 'Accord - Verify Email',
+  'forgot-password': 'Anichat - Forgot Password',
+  'verify': 'Anichat - Login Verification Code',
+  'verify-email': 'Anichat - Verify Email',
 };
